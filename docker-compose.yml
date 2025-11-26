@@ -1,0 +1,47 @@
+services:
+  # CV Receptor API service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cv-receptor-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Server configuration
+      - SERVER_PORT=8080
+      - SPRING_APPLICATION_NAME=cv-receptor
+    networks:
+      - cv-receptor-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+  # ngrok tunnel (exposes API to internet)
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: cv-receptor-ngrok
+    ports:
+      - "4040:4040" # ngrok web UI
+    environment:
+      # Use your ngrok authtoken (get it from https://dashboard.ngrok.com/get-started/your-authtoken)
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN:-2xtf0E1SVfQSpiL9S6iUwnuLznI_uddo2VPakZ8ytW49Y6T7}
+    command:
+      - "http"
+      - "api:8080"
+      - "--log=stdout"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - cv-receptor-network
+    restart: unless-stopped
+
+networks:
+  cv-receptor-network:
+    driver: bridge
+    name: cv-receptor-network
