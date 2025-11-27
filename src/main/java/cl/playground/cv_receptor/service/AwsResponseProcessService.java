@@ -1,12 +1,11 @@
 package cl.playground.cv_receptor.service;
 
 import cl.playground.cv_receptor.dto.ProcessResponse;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class AwsResponseProcessService {
@@ -14,7 +13,7 @@ public class AwsResponseProcessService {
     private static final Logger log = LoggerFactory.getLogger(AwsResponseProcessService.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public ProcessResponse processAwsResponse(Map<String, Object> awsData) {
+    public ProcessResponse processAwsResponse(JsonNode awsData) {
 
         if (awsData == null || awsData.isEmpty()) {
             log.error("Datos de AWS vacíos o nulos");
@@ -22,7 +21,7 @@ public class AwsResponseProcessService {
         }
 
         try {
-            // Convertir el Map a JSON pretty string
+            // Convertir el JsonNode a JSON pretty string
             String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(awsData);
 
             // Log de los datos recibidos
@@ -38,11 +37,12 @@ public class AwsResponseProcessService {
             System.out.println("========================================");
 
             // Aquí puedes procesar los datos según la estructura que venga de AWS
-            // Ejemplos de campos que podrías extraer:
-            // - awsData.get("status")
+            // Ejemplos de campos que podrías extraer con JsonNode:
+            // - awsData.get("status").asText()
             // - awsData.get("data")
-            // - awsData.get("extracted_text")
-            // - awsData.get("metadata")
+            // - awsData.path("extracted_text").asText()
+            // - awsData.path("metadata").path("key").asText()
+            // - awsData.has("field") para verificar existencia
             // etc.
 
             // TODO: Implementar lógica de negocio con los datos procesados
