@@ -3,7 +3,6 @@ package cl.playground.cv_receptor.controller;
 import cl.playground.cv_receptor.dto.ProcessResponse;
 import cl.playground.cv_receptor.service.ResumeProcessService;
 import cl.playground.cv_receptor.service.AwsResponseProcessService;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +39,7 @@ public class CvReceptor {
     }
 
     @PostMapping(value = "/aws-response", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProcessResponse> receiveAwsResponse(@RequestBody JsonNode awsData) {
+    public ResponseEntity<ProcessResponse> receiveAwsResponse(@RequestBody String awsData) {
 
         // El controlador delega el procesamiento de la respuesta de AWS al servicio
         ProcessResponse response = awsResponseProcessService.processAwsResponse(awsData);

@@ -13,16 +13,19 @@ public class AwsResponseProcessService {
     private static final Logger log = LoggerFactory.getLogger(AwsResponseProcessService.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public ProcessResponse processAwsResponse(JsonNode awsData) {
+    public ProcessResponse processAwsResponse(String awsData) {
 
-        if (awsData == null || awsData.isEmpty()) {
+        if (awsData == null || awsData.isEmpty() || awsData.isBlank()) {
             log.error("Datos de AWS vacíos o nulos");
             return new ProcessResponse("ERROR", "Los datos de AWS son requeridos");
         }
 
         try {
+            // Parsear el String a JsonNode
+            JsonNode jsonNode = objectMapper.readTree(awsData);
+
             // Convertir el JsonNode a JSON pretty string
-            String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(awsData);
+            String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode);
 
             // Log de los datos recibidos
             log.info("========================================");
@@ -38,11 +41,11 @@ public class AwsResponseProcessService {
 
             // Aquí puedes procesar los datos según la estructura que venga de AWS
             // Ejemplos de campos que podrías extraer con JsonNode:
-            // - awsData.get("status").asText()
-            // - awsData.get("data")
-            // - awsData.path("extracted_text").asText()
-            // - awsData.path("metadata").path("key").asText()
-            // - awsData.has("field") para verificar existencia
+            // - jsonNode.get("status").asText()
+            // - jsonNode.get("data")
+            // - jsonNode.path("extracted_text").asText()
+            // - jsonNode.path("metadata").path("key").asText()
+            // - jsonNode.has("field") para verificar existencia
             // etc.
 
             // TODO: Implementar lógica de negocio con los datos procesados
